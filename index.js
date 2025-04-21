@@ -29,13 +29,11 @@ app.use('/api/v2/', userRouter)
 
 app.use('/api/v3/', blogRouter)
 
-// const mongoURI = process.env.MONGODB_URI || 'mongodb+srv://nguyenducmanh1809:manh1234@cluster0.1ya4y.mongodb.net/database?retryWrites=true&w=majority&appName=Cluster0';
-// mongoose.connect(mongoURI)
-//     .then(() => console.log("✅ Kết nối MongoDB thành công"))
-//     .catch((err) => console.error("❌ Lỗi kết nối MongoDB:", err));
+app.get('/', (req, res) => {
+    res.send('Backend đang chạy trên Render!');
+  });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`server chay o cong https://localhost:${PORT} `);
-
-})
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
