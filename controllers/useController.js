@@ -1,6 +1,6 @@
 const { hashPassword, comparePassword } = require("../helper/userHelper");
 const userModel = require("../models/useModel");
-const JWT = require('jsonwebtoken')
+const jwt = require('jsonwebtoken')
 
 const registerController = async (req, res) => {
     try {
@@ -60,14 +60,16 @@ const registerController = async (req, res) => {
 const loginController = async (req, res) => {
     try {
         const { email, password } = req.body;
+
+        // Kiểm tra thông tin nhập vào
         if (!email || !password) {
-            return res.status(404).send({
+            return res.status(400).send({
                 success: false,
-                message: 'tài khoản hoặc mật khẩu không hợp lệ',
-                error,
-            })
+                message: 'Tài khoản hoặc mật khẩu không hợp lệ',
+            });
         }
 
+        // Kiểm tra xem người dùng có tồn tại không
         const user = await userModel.findOne({ email });
         if (!user) {
             return res.status(404).send({
@@ -76,19 +78,21 @@ const loginController = async (req, res) => {
             });
         }
 
+        // So sánh mật khẩu
         const soSanh = await comparePassword(password, user.password);
         if (!soSanh) {
-            return res.status(200).send({
+            return res.status(400).send({
                 success: false,
                 message: 'Mật khẩu không đúng',
-            })
+            });
         }
 
-        //token
-        const token = await JWT.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" }
-        );
+        // Tạo JWT token
+        const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
+        // Trả về thông tin người dùng và token
         res.status(200).send({
+            success: true,
             message: 'Đăng nhập thành công',
             user: {
                 id: user.id,
@@ -100,15 +104,16 @@ const loginController = async (req, res) => {
                 role: user.role
             },
             token,
-        })
+        });
     } catch (error) {
         console.log(error);
         res.status(500).send({
+            success: false,
             message: 'Lỗi khi login',
-            error: error.message
-        })
+            error: error.message,  // Trả về thông báo lỗi chi tiết
+        });
     }
-}
+};
 
 /*********************Hiển thị tất cả người dùng********************* */
 const getAllUsers = async (req, res) => {
