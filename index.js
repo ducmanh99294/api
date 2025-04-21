@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -6,7 +7,7 @@ const connectDB = require('./config/db');
 const productRouter = require('./routes/productRouter')
 const userRouter = require('./routes/userRouter')
 const blogRouter = require('./routes/blogRouter')
-const mongoose = require('mongoose');
+
 
 const app = express();
 app.use(bodyParser.json({
