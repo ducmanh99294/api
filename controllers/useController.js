@@ -14,16 +14,6 @@ const registerController = async (req, res) => {
         if (!password) {
             return res.send({ message: 'Hay nhap password' })
         }
-        if (!phone) {
-            return res.send({ message: 'Hay nhap sdt' })
-        }
-        if (!address) {
-            return res.send({ message: 'Hay nhap dia chi' })
-        }
-        if (!gender) {
-            return res.send({ message: 'Hay nhap giới tính' })
-        }
-
         const userExists = await userModel.findOne({ email })
         if (userExists) {
             return res.status(200).send({
