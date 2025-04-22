@@ -5,33 +5,40 @@ const jwt = require('jsonwebtoken')
 const registerController = async (req, res) => {
     try {
         const { name, email, password, phone, address, gender } = req.body;
+        
         if (!name) {
-            return res.send({ error: 'Hay nhap ten' });
+            return res.status(400).send({ error: 'Hay nhap ten' });
         };
         if (!email) {
-            return res.send({ message: 'Hay nhap email' })
+            return res.status(400).send({ message: 'Hay nhap email' })
         };
         if (!password) {
-            return res.send({ message: 'Hay nhap password' })
+            return res.status(400).send({ message: 'Hay nhap password' })
         }
-        const userExists = await userModel.findOne({ email })
+        
+        // Kiểm tra xem người dùng đã tồn tại chưa
+        const userExists = await userModel.findOne({ email });
         if (userExists) {
             return res.status(200).send({
                 success: false,
                 message: 'Đã đăng kí, vui lòng đăng nhập'
             })
         }
-        //mã hóa bcrypt
+
+        // Mã hóa mật khẩu
         const hashedPassword = await hashPassword(password);
-        const user = await new userModel({
+        const user = new userModel({
             name,
             email,
-            phone,
-            address,
-            gender,
+            phone: phone || '',  // Không bắt buộc nhập phone
+            address: address || '',  // Không bắt buộc nhập address
+            gender: gender || '',  // Không bắt buộc nhập gender
             password: hashedPassword,
-        }).save();
+        });
 
+        await user.save(); // Lưu người dùng vào DB
+
+        // Trả về thông báo thành công và thông tin người dùng
         res.status(201).send({
             success: true,
             message: 'Đăng kí thành công',
@@ -41,11 +48,10 @@ const registerController = async (req, res) => {
         console.log(error);
         return res.status(500).json({
             success: false,
-            message: ' Loi ham registerController'
+            message: 'Loi ham registerController'
         })
     }
-}
-
+};
 
 const loginController = async (req, res) => {
     try {
