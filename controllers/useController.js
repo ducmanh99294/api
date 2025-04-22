@@ -176,12 +176,38 @@ const deleteUser = async (req, res) => {
         })
     }
 }
-
+//****************************Cap nhap nguoi dung******************************** */
+// Controller update user
+const updateUser = async (req, res) => {
+    const { oldEmail, newName, newEmail, newPassword } = req.body;
+  
+    try {
+      // Tìm người dùng cũ theo email
+      const user = await User.findOne({ email: oldEmail });
+      if (!user) {
+        return res.status(400).json({ success: false, message: "User not found!" });
+      }
+  
+      // Cập nhật thông tin người dùng
+      user.name = newName || user.name;
+      user.email = newEmail || user.email;
+      user.password = newPassword || user.password;
+  
+      // Lưu người dùng với thông tin mới
+      await user.save();
+  
+      return res.status(200).json({ success: true, message: "User updated successfully!" });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Internal server error!" });
+    }
+  };
 
 module.exports = {
     registerController,
     loginController,
     getAllUsers,
     getUserById,
-    deleteUser
+    deleteUser,
+    updateUser,
 }
